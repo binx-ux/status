@@ -1,11 +1,7 @@
 {
-   "message": "Use caution - anti-cheat updates detected in some games",
-    "color": {
-        "r": 255,
-        "g": 140,
-        "b": 0
-    },
-    "updateAvailable": false,
-    "maintenanceMode": false,
-    "customAnnouncement": null
+  "script_status": "operational",
+  "script_message": "Binxix Hub V6 is working normally",
+  "game_support": "updating",
+  "game_message": "Arsenal temporarily disabled due to Roblox update - other games work fine",
+  "last_updated": "2025-01-24T18:30:00Z"
 }
