@@ -1,0 +1,11 @@
+{
+    "message": "All systems operational",
+    "color": {
+        "r": 80,
+        "g": 255,
+        "b": 120
+    },
+    "updateAvailable": false,
+    "maintenanceMode": false,
+    "customAnnouncement": null
+}
