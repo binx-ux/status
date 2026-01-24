@@ -1,7 +1,6 @@
 {
   "script_status": "operational",
-  "script_message": "MAJOR executor outage affecting all executors - NOT our fault",
+  "script_message": "Minor executor issues reported - Binxix Hub working perfectly",
   "game_support": "operational",
-  "game_message": "Wait for executors to come back online - Binxix Hub is fine"
+  "game_message": "Try Solara or Xeno if your executor isn't working"
 }
-
