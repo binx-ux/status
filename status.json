@@ -1,6 +1,6 @@
 {
-  "script_status": "updating",
-  "script_message": "ESP system under development - expect update on January 31, 2026",
-  "game_support": "operational",
-  "game_message": "All supported games working - Arsenal, Prison Life, MTC & more"
+  "script_status": "offline",
+  "script_message": "Hub temporarily offline for emergency maintenance",
+  "game_support": "offline",
+  "game_message": "All games unavailable - esp is being updated"
 }
