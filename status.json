@@ -1,6 +1,6 @@
 {
   "script_status": "operational",
-  "script_message": "V6 running smooth - minor QoL improvements added",
-  "game_support": "operational",
-  "game_message": "All games working perfectly - enjoy!"
+  "script_message": "V6 running smooth - MM2 auto-load temporarily disabled",
+  "game_support": "maintenance",
+  "game_message": "MM2 Vertex integration paused - Binxix GUI still works fine!"
 }
