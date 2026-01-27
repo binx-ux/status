@@ -1,6 +1,6 @@
 {
-  "script_status": "operational",
-  "script_message": "MAJOR executor outage affecting all executors - NOT our fault",
-  "game_support": "operational",
-  "game_message": "Wait for executors to come back online - Binxix Hub is fine"
+  "script_status": "offline",
+  "script_message": "Binxix Hub going offline indefinitely Feb 20th - was a good run but can't provide updates anymore or maintain it. Anyone who still has the script or wants it can contact me, it's free now",
+  "game_support": "updating",
+  "game_message": "Final shutdown Feb 20th - no more updates or support. Thanks for using Binxix Hub"
 }
