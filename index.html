@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binxix Hub — Embed Sender</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface-2: #1a1a26;
+    --border: #2a2a3a;
+    --accent: #7c3aed;
+    --accent-glow: #a855f7;
+    --accent-dim: #4c1d95;
+    --text: #e2e2f0;
+    --text-dim: #8888a0;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124, 58, 237, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124, 58, 237, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridShift 20s linear infinite;
+    z-index: 0;
+  }
+
+  @keyframes gridShift {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(60px, 60px); }
+  }
+
+  /* Floating orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb-1 { width: 400px; height: 400px; background: var(--accent); top: -100px; left: -100px; animation: orbFloat1 15s ease-in-out infinite; }
+  .orb-2 { width: 300px; height: 300px; background: #ec4899; bottom: -50px; right: -50px; animation: orbFloat2 18s ease-in-out infinite; }
+  .orb-3 { width: 200px; height: 200px; background: #06b6d4; top: 50%; left: 50%; animation: orbFloat3 12s ease-in-out infinite; }
+
+  @keyframes orbFloat1 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(80px, 60px); } }
+  @keyframes orbFloat2 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-60px, -80px); } }
+  @keyframes orbFloat3 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-40px, 50px); } }
+
+  /* Layout */
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 32px;
+    min-height: 100vh;
+    align-content: start;
+  }
+
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; }
+  }
+
+  /* Header */
+  .header {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .logo {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 900;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, var(--accent-glow), #ec4899, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    display: inline-block;
+    animation: logoGlow 3s ease-in-out infinite;
+  }
+
+  @keyframes logoGlow {
+    0%, 100% { filter: drop-shadow(0 0 20px rgba(124, 58, 237, 0.3)); }
+    50% { filter: drop-shadow(0 0 40px rgba(168, 85, 247, 0.6)); }
+  }
+
+  .subtitle {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  /* Panels */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    animation: panelIn 0.6s ease-out both;
+  }
+
+  .panel:nth-child(2) { animation-delay: 0.1s; }
+  .panel:nth-child(3) { animation-delay: 0.2s; }
+
+  @keyframes panelIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+    opacity: 0.6;
+  }
+
+  .panel-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent-glow);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .panel-title::before {
+    content: '';
+    width: 8px; height: 8px;
+    background: var(--accent-glow);
+    border-radius: 2px;
+    box-shadow: 0 0 12px var(--accent-glow);
+    animation: dotPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes dotPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.7); }
+  }
+
+  /* Form elements */
+  .field { margin-bottom: 18px; }
+
+  .field label {
+    display: block;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .field input, .field textarea, .field select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    outline: none;
+  }
+
+  .field input:focus, .field textarea:focus, .field select:focus {
+    border-color: var(--accent-glow);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15), 0 0 20px rgba(124, 58, 237, 0.1);
+  }
+
+  .field textarea { resize: vertical; min-height: 100px; }
+
+  .field select option { background: var(--surface); }
+
+  /* Color picker row */
+  .color-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .color-row input[type="color"] {
+    width: 48px; height: 48px;
+    padding: 4px;
+    border-radius: 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .color-row input[type="text"] { flex: 1; }
+
+  .color-presets {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .color-preset {
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .color-preset:hover {
+    transform: scale(1.2);
+    border-color: #fff;
+    box-shadow: 0 0 12px currentColor;
+  }
+
+  /* Gif display */
+  .gif-section {
+    background: var(--bg);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    margin-bottom: 18px;
+  }
+
+  .gif-section img {
+    max-width: 120px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+
+  .gif-section .gif-label {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .gif-url-field { margin-top: 10px; }
+  .gif-url-field input {
+    font-size: 0.75rem;
+    padding: 8px 12px;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .btn-send {
+    background: linear-gradient(135deg, var(--accent), #9333ea);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
+  }
+
+  .btn-send:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(124, 58, 237, 0.5);
+  }
+
+  .btn-send:active { transform: translateY(0); }
+
+  .btn-send::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+  }
+
+  .btn-send:hover::after { transform: translateX(100%); }
+
+  .btn-clear {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    margin-top: 10px;
+  }
+
+  .btn-clear:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  /* Preview panel */
+  .preview-container {
+    position: sticky;
+    top: 40px;
+  }
+
+  .discord-preview {
+    background: #2b2d31;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 4px;
+  }
+
+  .discord-msg {
+    display: flex;
+    gap: 16px;
+  }
+
+  .discord-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 0.9rem;
+    color: #fff;
+  }
+
+  .discord-body { flex: 1; min-width: 0; }
+
+  .discord-username {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .discord-bot-tag {
+    display: inline-block;
+    background: #5865f2;
+    color: #fff;
+    font-size: 0.6rem;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .discord-timestamp {
+    font-size: 0.7rem;
+    color: #949ba4;
+    margin-left: 8px;
+  }
+
+  .discord-content {
+    color: #dbdee1;
+    font-size: 0.9rem;
+    margin-top: 4px;
+    line-height: 1.4;
+    word-break: break-word;
+  }
+
+  .discord-embed {
+    margin-top: 8px;
+    border-radius: 4px;
+    background: #2f3136;
+    overflow: hidden;
+    display: flex;
+    max-width: 340px;
+  }
+
+  .embed-color-bar {
+    width: 4px;
+    flex-shrink: 0;
+  }
+
+  .embed-inner {
+    padding: 12px 16px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .embed-author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .embed-author-icon {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+  }
+
+  .embed-author-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .embed-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #00a8fc;
+    margin-bottom: 6px;
+  }
+
+  .embed-description {
+    font-size: 0.85rem;
+    color: #dcddde;
+    line-height: 1.4;
+    margin-bottom: 8px;
+    word-break: break-word;
+    white-space: pre-wrap;
+  }
+
+  .embed-fields {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .embed-field-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .embed-field-value {
+    font-size: 0.8rem;
+    color: #dcddde;
+  }
+
+  .embed-image {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-top: 8px;
+  }
+
+  .embed-thumbnail {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-left: 16px;
+    align-self: flex-start;
+  }
+
+  .embed-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 0.7rem;
+    color: #949ba4;
+  }
+
+  .embed-footer-icon {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+  }
+
+  /* Status toast */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    z-index: 999;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    backdrop-filter: blur(10px);
+  }
+
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .toast-success {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: var(--success);
+  }
+
+  .toast-error {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: var(--danger);
+  }
+
+  /* Sending animation */
+  .btn-send.sending {
+    pointer-events: none;
+    opacity: 0.8;
+  }
+
+  .btn-send.sending::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    animation: sendPulse 1s ease-in-out infinite;
+  }
+
+  @keyframes sendPulse {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* Particles */
+  .particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--accent-glow);
+    border-radius: 50%;
+    opacity: 0;
+    animation: particleFloat linear infinite;
+  }
+
+  @keyframes particleFloat {
+    0% { opacity: 0; transform: translateY(100vh) scale(0); }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { opacity: 0; transform: translateY(-20px) scale(1); }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent-dim); }
+
+  /* Template selector */
+  .templates {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .template-btn {
+    padding: 6px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .template-btn:hover {
+    border-color: var(--accent-glow);
+    color: var(--accent-glow);
+    background: rgba(124, 58, 237, 0.05);
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div class="particles" id="particles"></div>
+
+<div class="app">
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">BINXIX HUB</div>
+    <div class="subtitle">Embed Sender &mdash; Webhook Control</div>
+  </div>
+
+  <!-- Editor -->
+  <div class="panel">
+    <div class="panel-title">Compose Embed</div>
+
+    <div class="templates">
+      <button class="template-btn" onclick="loadTemplate('update')">🔄 Script Update</button>
+      <button class="template-btn" onclick="loadTemplate('announce')">📢 Announcement</button>
+      <button class="template-btn" onclick="loadTemplate('patch')">🛠️ Patch Notes</button>
+      <button class="template-btn" onclick="loadTemplate('status')">🟢 Status</button>
+    </div>
+
+    <div class="field">
+      <label>Bot Username</label>
+      <input type="text" id="username" value="Binxix Hub" placeholder="Webhook display name">
+    </div>
+
+    <div class="field">
+      <label>Avatar URL</label>
+      <input type="text" id="avatarUrl" placeholder="https://example.com/avatar.png">
+    </div>
+
+    <div class="field">
+      <label>Message Content (outside embed)</label>
+      <input type="text" id="content" placeholder="@everyone New update dropping!">
+    </div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:20px 0;">
+
+    <div class="field">
+      <label>Embed Title</label>
+      <input type="text" id="embedTitle" placeholder="Script Update v6.2">
+    </div>
+
+    <div class="field">
+      <label>Embed Description</label>
+      <textarea id="embedDesc" placeholder="What's new in this update..."></textarea>
+    </div>
+
+    <div class="field">
+      <label>Embed Color</label>
+      <div class="color-row">
+        <input type="color" id="embedColor" value="#7c3aed">
+        <input type="text" id="embedColorHex" value="#7c3aed" placeholder="#7c3aed">
+      </div>
+      <div class="color-presets">
+        <div class="color-preset" style="background:#7c3aed;color:#7c3aed" onclick="setColor('#7c3aed')"></div>
+        <div class="color-preset" style="background:#ef4444;color:#ef4444" onclick="setColor('#ef4444')"></div>
+        <div class="color-preset" style="background:#10b981;color:#10b981" onclick="setColor('#10b981')"></div>
+        <div class="color-preset" style="background:#f59e0b;color:#f59e0b" onclick="setColor('#f59e0b')"></div>
+        <div class="color-preset" style="background:#3b82f6;color:#3b82f6" onclick="setColor('#3b82f6')"></div>
+        <div class="color-preset" style="background:#ec4899;color:#ec4899" onclick="setColor('#ec4899')"></div>
+        <div class="color-preset" style="background:#06b6d4;color:#06b6d4" onclick="setColor('#06b6d4')"></div>
+        <div class="color-preset" style="background:#ffffff;color:#ffffff" onclick="setColor('#ffffff')"></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Author Name</label>
+      <input type="text" id="authorName" placeholder="Binxix">
+    </div>
+
+    <div class="field">
+      <label>Author Icon URL</label>
+      <input type="text" id="authorIcon" placeholder="https://example.com/icon.png">
+    </div>
+
+    <div class="field">
+      <label>Thumbnail URL</label>
+      <input type="text" id="thumbnail" placeholder="Small image top-right">
+    </div>
+
+    <div class="field">
+      <label>Image URL (large image)</label>
+      <input type="text" id="imageUrl" placeholder="https://media.giphy.com/...">
+    </div>
+
+    <div class="gif-section">
+      <img src="https://i.imgur.com/placeholder.gif" id="gifPreviewImg" style="display:none" alt="gif">
+      <div class="gif-label">Drop a GIF URL above or use the default</div>
+    </div>
+
+    <div class="field">
+      <label>Footer Text</label>
+      <input type="text" id="footerText" placeholder="Binxix Hub • v6">
+    </div>
+
+    <div class="field">
+      <label>Footer Icon URL</label>
+      <input type="text" id="footerIcon" placeholder="https://example.com/icon.png">
+    </div>
+
+    <div class="field">
+      <label>Include Timestamp?</label>
+      <select id="timestamp">
+        <option value="yes">Yes — Current Time</option>
+        <option value="no">No</option>
+      </select>
+    </div>
+
+    <button class="btn btn-send" id="sendBtn" onclick="sendWebhook()">
+      ⚡ Send Embed
+    </button>
+    <button class="btn btn-clear" onclick="clearForm()">
+      Clear All
+    </button>
+  </div>
+
+  <!-- Preview -->
+  <div class="preview-container">
+    <div class="panel">
+      <div class="panel-title">Live Preview</div>
+      <div class="discord-preview">
+        <div class="discord-msg">
+          <div class="discord-avatar" id="previewAvatar">B</div>
+          <div class="discord-body">
+            <div>
+              <span class="discord-username" id="previewUsername">Binxix Hub</span>
+              <span class="discord-bot-tag">BOT</span>
+              <span class="discord-timestamp">Today at --:--</span>
+            </div>
+            <div class="discord-content" id="previewContent"></div>
+            <div class="discord-embed" id="previewEmbed" style="display:none;">
+              <div class="embed-color-bar" id="previewColorBar" style="background:#7c3aed;"></div>
+              <div class="embed-inner">
+                <div class="embed-author" id="previewAuthor" style="display:none;">
+                  <img class="embed-author-icon" id="previewAuthorIcon" src="" style="display:none">
+                  <span class="embed-author-name" id="previewAuthorName"></span>
+                </div>
+                <div class="embed-title" id="previewTitle"></div>
+                <div class="embed-description" id="previewDesc"></div>
+                <img class="embed-image" id="previewImage" src="" style="display:none">
+                <div class="embed-footer" id="previewFooter" style="display:none;">
+                  <img class="embed-footer-icon" id="previewFooterIcon" src="" style="display:none">
+                  <span id="previewFooterText"></span>
+                </div>
+              </div>
+              <img class="embed-thumbnail" id="previewThumbnail" src="" style="display:none">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:20px;">
+      <div class="panel-title">Webhook Config</div>
+      <div class="field">
+        <label>Webhook URL</label>
+        <input type="text" id="webhookUrl" value="https://discord.com/api/webhooks/1469549834406199306/psJxft_7C75FfoGAfeQdK92AXYOVn_5-MEb8JcikgKRRCPsW96l29vecQD4ol-ZutaG8" placeholder="Discord Webhook URL">
+      </div>
+      <div style="font-size:0.65rem;color:var(--text-dim);letter-spacing:0.5px;">
+        🔒 Webhook URL stays local — never stored or sent anywhere except Discord.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // Particles
+  const particlesEl = document.getElementById('particles');
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (8 + Math.random() * 12) + 's';
+    p.style.animationDelay = Math.random() * 10 + 's';
+    p.style.width = p.style.height = (1 + Math.random() * 3) + 'px';
+    particlesEl.appendChild(p);
+  }
+
+  // Live preview
+  const fields = ['username','content','embedTitle','embedDesc','embedColor','embedColorHex',
+    'authorName','authorIcon','thumbnail','imageUrl','footerText','footerIcon','timestamp','avatarUrl'];
+
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', updatePreview);
+  });
+
+  function updatePreview() {
+    const get = id => document.getElementById(id).value.trim();
+
+    // Username
+    const uname = get('username') || 'Webhook';
+    document.getElementById('previewUsername').textContent = uname;
+    document.getElementById('previewAvatar').textContent = uname.charAt(0).toUpperCase();
+
+    // Content
+    const content = get('content');
+    const contentEl = document.getElementById('previewContent');
+    contentEl.textContent = content;
+    contentEl.style.display = content ? 'block' : 'none';
+
+    // Embed visibility
+    const hasEmbed = get('embedTitle') || get('embedDesc') || get('imageUrl') || get('thumbnail');
+    const embedEl = document.getElementById('previewEmbed');
+    embedEl.style.display = hasEmbed ? 'flex' : 'none';
+
+    // Color bar
+    const color = get('embedColor');
+    document.getElementById('previewColorBar').style.background = color;
+
+    // Author
+    const authorName = get('authorName');
+    const authorDiv = document.getElementById('previewAuthor');
+    const authorIconEl = document.getElementById('previewAuthorIcon');
+    if (authorName) {
+      authorDiv.style.display = 'flex';
+      document.getElementById('previewAuthorName').textContent = authorName;
+      const aIcon = get('authorIcon');
+      if (aIcon) { authorIconEl.src = aIcon; authorIconEl.style.display = 'block'; }
+      else { authorIconEl.style.display = 'none'; }
+    } else { authorDiv.style.display = 'none'; }
+
+    // Title & Description
+    document.getElementById('previewTitle').textContent = get('embedTitle');
+    document.getElementById('previewDesc').textContent = get('embedDesc');
+
+    // Image
+    const imgUrl = get('imageUrl');
+    const imgEl = document.getElementById('previewImage');
+    if (imgUrl) { imgEl.src = imgUrl; imgEl.style.display = 'block'; }
+    else { imgEl.style.display = 'none'; }
+
+    // Gif preview
+    const gifPrev = document.getElementById('gifPreviewImg');
+    if (imgUrl) { gifPrev.src = imgUrl; gifPrev.style.display = 'block'; }
+    else { gifPrev.style.display = 'none'; }
+
+    // Thumbnail
+    const thumbUrl = get('thumbnail');
+    const thumbEl = document.getElementById('previewThumbnail');
+    if (thumbUrl) { thumbEl.src = thumbUrl; thumbEl.style.display = 'block'; }
+    else { thumbEl.style.display = 'none'; }
+
+    // Footer
+    const footerText = get('footerText');
+    const footerDiv = document.getElementById('previewFooter');
+    if (footerText) {
+      footerDiv.style.display = 'flex';
+      document.getElementById('previewFooterText').textContent = footerText;
+      const fIcon = get('footerIcon');
+      const fIconEl = document.getElementById('previewFooterIcon');
+      if (fIcon) { fIconEl.src = fIcon; fIconEl.style.display = 'block'; }
+      else { fIconEl.style.display = 'none'; }
+    } else { footerDiv.style.display = 'none'; }
+
+    // Timestamp display
+    const now = new Date();
+    document.querySelector('.discord-timestamp').textContent =
+      'Today at ' + now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  }
+
+  // Color sync
+  document.getElementById('embedColor').addEventListener('input', e => {
+    document.getElementById('embedColorHex').value = e.target.value;
+    updatePreview();
+  });
+
+  document.getElementById('embedColorHex').addEventListener('input', e => {
+    const v = e.target.value;
+    if (/^#[0-9a-fA-F]{6}$/.test(v)) {
+      document.getElementById('embedColor').value = v;
+    }
+    updatePreview();
+  });
+
+  function setColor(hex) {
+    document.getElementById('embedColor').value = hex;
+    document.getElementById('embedColorHex').value = hex;
+    updatePreview();
+  }
+
+  // Templates
+  function loadTemplate(type) {
+    const t = {
+      update: {
+        content: '@everyone 🔥 **New script update is live!**',
+        embedTitle: '📦 Binxix Hub — Update v6.2',
+        embedDesc: '**What\'s New:**\n✅ Improved ESP accuracy\n✅ Fixed aimlock delay\n✅ New GUI theme options\n✅ Better anti-detection\n\n**Get the update:** Use `loadstring` to pull the latest version.',
+        authorName: 'Binxix',
+        footerText: 'Binxix Hub • Script Update',
+        embedColor: '#7c3aed'
+      },
+      announce: {
+        content: '@everyone 📢 **Important Announcement**',
+        embedTitle: '🔔 Binxix Hub Announcement',
+        embedDesc: 'Hey everyone! We have some exciting news to share.\n\nStay tuned for more details coming soon.',
+        authorName: 'Binxix',
+        footerText: 'Binxix Hub • Announcement',
+        embedColor: '#3b82f6'
+      },
+      patch: {
+        content: '',
+        embedTitle: '🛠️ Patch Notes — v6.2.1',
+        embedDesc: '**Bug Fixes:**\n🔧 Fixed ESP boxes not aligning properly\n🔧 Resolved menu lag on lower-end devices\n🔧 Fixed keybind conflicts\n\n**Improvements:**\n⚡ Reduced script load time by 40%\n⚡ Optimized memory usage',
+        authorName: 'Binxix',
+        footerText: 'Binxix Hub • Patch Notes',
+        embedColor: '#f59e0b'
+      },
+      status: {
+        content: '',
+        embedTitle: '🟢 Script Status — All Systems Go',
+        embedDesc: '**Service Status:**\n✅ Script Loader — Online\n✅ ESP System — Working\n✅ Aimlock — Working\n✅ GUI — Working\n\nAll features are currently operational.',
+        authorName: 'Binxix',
+        footerText: 'Binxix Hub • Status Check',
+        embedColor: '#10b981'
+      }
+    };
+
+    const template = t[type];
+    if (!template) return;
+
+    document.getElementById('content').value = template.content || '';
+    document.getElementById('embedTitle').value = template.embedTitle || '';
+    document.getElementById('embedDesc').value = template.embedDesc || '';
+    document.getElementById('authorName').value = template.authorName || '';
+    document.getElementById('footerText').value = template.footerText || '';
+    setColor(template.embedColor || '#7c3aed');
+    updatePreview();
+  }
+
+  // Send webhook
+  async function sendWebhook() {
+    const get = id => document.getElementById(id).value.trim();
+    const url = get('webhookUrl');
+
+    if (!url) return showToast('Set a webhook URL first!', 'error');
+
+    const btn = document.getElementById('sendBtn');
+    btn.classList.add('sending');
+    btn.textContent = '⏳ SENDING...';
+
+    const embed = {};
+    const title = get('embedTitle');
+    const desc = get('embedDesc');
+    const color = get('embedColor');
+    const authorName = get('authorName');
+    const authorIcon = get('authorIcon');
+    const thumb = get('thumbnail');
+    const img = get('imageUrl');
+    const footText = get('footerText');
+    const footIcon = get('footerIcon');
+    const ts = document.getElementById('timestamp').value;
+
+    if (title) embed.title = title;
+    if (desc) embed.description = desc;
+    if (color) embed.color = parseInt(color.replace('#',''), 16);
+    if (authorName) {
+      embed.author = { name: authorName };
+      if (authorIcon) embed.author.icon_url = authorIcon;
+    }
+    if (thumb) embed.thumbnail = { url: thumb };
+    if (img) embed.image = { url: img };
+    if (footText) {
+      embed.footer = { text: footText };
+      if (footIcon) embed.footer.icon_url = footIcon;
+    }
+    if (ts === 'yes') embed.timestamp = new Date().toISOString();
+
+    const payload = {};
+    const content = get('content');
+    const username = get('username');
+    const avatar = get('avatarUrl');
+
+    if (content) payload.content = content;
+    if (username) payload.username = username;
+    if (avatar) payload.avatar_url = avatar;
+    if (Object.keys(embed).length > 0) payload.embeds = [embed];
+
+    if (!payload.content && !payload.embeds) {
+      btn.classList.remove('sending');
+      btn.textContent = '⚡ Send Embed';
+      return showToast('Add some content or an embed first!', 'error');
+    }
+
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok || res.status === 204) {
+        showToast('✅ Embed sent successfully!', 'success');
+      } else {
+        const err = await res.text();
+        showToast('❌ Failed: ' + (err || res.status), 'error');
+      }
+    } catch (e) {
+      showToast('❌ Error: ' + e.message, 'error');
+    }
+
+    btn.classList.remove('sending');
+    btn.textContent = '⚡ Send Embed';
+  }
+
+  function showToast(msg, type) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.className = 'toast toast-' + type + ' show';
+    setTimeout(() => toast.classList.remove('show'), 3500);
+  }
+
+  function clearForm() {
+    ['content','embedTitle','embedDesc','authorName','authorIcon','thumbnail',
+     'imageUrl','footerText','footerIcon','avatarUrl'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('username').value = 'Binxix Hub';
+    setColor('#7c3aed');
+    updatePreview();
+  }
+
+  // Initial preview
+  updatePreview();
+</script>
+</body>
+</html>
